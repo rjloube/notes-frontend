@@ -1,32 +1,21 @@
-import { useState } from "react";
+import { render, screen } from "@testing-library/react";
+import NoteForm from "./NoteForm";
+import userEvent from "@testing-library/user-event";
 
-const NoteForm = ({ createNote }) => {
-  const [newNote, setNewNote] = useState("");
+test("<NoteForm /> updates parent state and calls onSubmit", async () => {
+  const createNote = vi.fn();
+  const user = userEvent.setup();
 
-  const handleChange = (event) => {
-    setNewNote(event.target.value);
-  };
+  render(<NoteForm createNote={createNote} />);
 
-  const addNote = (event) => {
-    event.preventDefault();
-    createNote({
-      content: newNote,
-      important: true,
-    });
+  const input = screen.getByPlaceholderText("write note content here");
+  const sendButton = screen.getByText("save");
 
-    setNewNote("");
-  };
+  await user.type(input, "testing a form...");
+  await user.click(sendButton);
 
-  return (
-    <div className="formDiv">
-      <h2>Create a new note</h2>
+  console.log(createNote.mock.calls);
 
-      <form onSubmit={addNote}>
-        <input value={newNote} onChange={handleChange} />
-        <button type="submit">save</button>
-      </form>
-    </div>
-  );
-};
-
-export default NoteForm;
+  expect(createNote.mock.calls).toHaveLength(1);
+  expect(createNote.mock.calls[0][0].content).toBe("testing a form...");
+});
