@@ -65,7 +65,7 @@ const App = () => {
       noteService.setToken(user.token);
       setUser(user);
     } catch (exception) {
-      setErrorMessage("Wrong credentials");
+      setErrorMessage("wrong credentials");
       setTimeout(() => {
         setErrorMessage(null);
       }, 5000);
